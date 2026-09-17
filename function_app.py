@@ -818,14 +818,26 @@ def chat(
     if use_rag:
 
         try:
-
-            # Lazy import.
-            # FAISS is only imported when RAG is used.
             from rag.retriever import retrieve
+
+            rag_top_k = int(
+                os.environ.get(
+                    "RAG_TOP_K",
+                    "4"
+                )
+            )
+
+            rag_min_score = float(
+                os.environ.get(
+                    "RAG_MIN_SCORE",
+                    "0.35"
+                )
+            )
 
             rag_results = retrieve(
                 message,
-                top_k=4
+                top_k=rag_top_k,
+                min_score=rag_min_score
             )
 
         except FileNotFoundError:
@@ -854,7 +866,6 @@ def chat(
                 status_code=500,
                 mimetype="application/json"
             )
-
     # ========================================================
     # 9. READ CONVERSATION
     # ========================================================
@@ -924,16 +935,25 @@ def chat(
 
     if use_rag:
 
-        document_context = "\n\n".join(
-            [
-                (
-                    f"Source: {item['source']}\n"
-                    f"Chunk ID: {item['chunk_id']}\n"
-                    f"{item['text']}"
-                )
-                for item in rag_results
-            ]
-        )
+        if not rag_results:
+
+            document_context = (
+                "No sufficiently relevant information "
+                "was found in the uploaded documents."
+            )
+
+        else:
+
+            document_context = "\n\n".join(
+                [
+                    (
+                        f"Source: {item['source']}\n"
+                        f"Chunk ID: {item['chunk_id']}\n"
+                        f"{item['text']}"
+                    )
+                    for item in rag_results
+                ]
+            )
 
         system_prompt = f"""
 {CHAT_SYSTEM_PROMPT}
@@ -945,9 +965,8 @@ Use the provided document context when answering.
 Rules:
 1. Use the document context as the primary source.
 2. Do not invent information.
-3. If the answer is not present in the documents,
-   say:
-   "I could not find that information in the uploaded documents."
+3. If no sufficiently relevant information was found,
+   say that the answer was not found in the uploaded documents.
 4. Keep your answer clear and relevant to the user's question.
 
 DOCUMENT CONTEXT:
