@@ -1,6 +1,7 @@
 import azure.functions as func
 import json
 import os
+import time
 from datetime import datetime, timezone
 
 import tiktoken
@@ -643,6 +644,9 @@ def chat(
     req: func.HttpRequest
 ) -> func.HttpResponse:
 
+    request_start = time.perf_counter()
+
+    
     # ========================================================
     # 1. API KEY AUTHENTICATION
     # ========================================================
@@ -810,6 +814,8 @@ def chat(
         )
 
     rag_results = []
+    retrieval_time_ms = 0.0
+    llm_time_ms = 0.0
 
     # ========================================================
     # 8. RAG RETRIEVAL
@@ -833,12 +839,19 @@ def chat(
                     "0.35"
                 )
             )
+            retrieval_start = time.perf_counter()
 
             rag_results = retrieve(
                 message,
                 top_k=rag_top_k,
                 min_score=rag_min_score
             )
+
+            retrieval_time_ms = round(
+                (time.perf_counter() - retrieval_start) * 1000,
+                2
+            )
+           
 
         except FileNotFoundError:
 
@@ -1008,27 +1021,28 @@ DOCUMENT CONTEXT:
     # 14. CALL GROQ
     # ========================================================
 
+    
+
     try:
+
+        llm_start = time.perf_counter()
 
         response = (
             groq_client
             .chat
             .completions
             .create(
-
                 model=CHAT_MODEL,
-
                 messages=recent_messages,
-
                 temperature=0.6,
-
-                max_completion_tokens=(
-                    MAX_OUTPUT_TOKENS
-                ),
-
+                max_completion_tokens=MAX_OUTPUT_TOKENS,
                 reasoning_effort="medium"
-
             )
+        )
+
+        llm_time_ms = round(
+            (time.perf_counter() - llm_start) * 1000,
+            2
         )
 
     except Exception:
@@ -1043,7 +1057,6 @@ DOCUMENT CONTEXT:
             status_code=502,
             mimetype="application/json"
         )
-
     # ========================================================
     # 15. EXTRACT AI RESPONSE
     # ========================================================
@@ -1134,6 +1147,11 @@ DOCUMENT CONTEXT:
     # 19. RESPONSE
     # ========================================================
 
+    total_time_ms = round(
+        (time.perf_counter() - request_start) * 1000,
+        2
+    )
+
     return func.HttpResponse(
 
         json.dumps({
@@ -1153,6 +1171,12 @@ DOCUMENT CONTEXT:
             "usage": usage_data,
 
             "rag": use_rag,
+
+            "performance": {
+                "retrieval_time_ms": retrieval_time_ms,
+                "llm_time_ms": llm_time_ms,
+                "total_time_ms": total_time_ms
+            },
 
             "sources": [
                 {
