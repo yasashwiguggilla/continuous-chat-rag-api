@@ -840,32 +840,41 @@ def chat(
                 )
             )
             retrieval_start = time.perf_counter()
+            rag_mode = os.environ.get(
+           "RAG_RETRIEVAL_MODE",
+    "hybrid"
+)
+
+            rag_mode = os.environ.get(
+                "RAG_RETRIEVAL_MODE",
+                "hybrid"
+            )
+
+            retrieval_start = time.perf_counter()
 
             rag_results = retrieve(
                 message,
                 top_k=rag_top_k,
-                min_score=rag_min_score
+                min_score=rag_min_score,
+                mode=rag_mode
             )
 
             retrieval_time_ms = round(
                 (time.perf_counter() - retrieval_start) * 1000,
                 2
             )
-           
 
         except FileNotFoundError:
-
             return func.HttpResponse(
                 json.dumps({
                     "error": (
                         "RAG index not found. "
-                        "Call /api/rag/index first."
+                        "Please run /api/rag/index first."
                     )
                 }),
-                status_code=400,
+                status_code=500,
                 mimetype="application/json"
             )
-
         except Exception as exc:
 
             return func.HttpResponse(
@@ -1177,15 +1186,18 @@ DOCUMENT CONTEXT:
                 "llm_time_ms": llm_time_ms,
                 "total_time_ms": total_time_ms
             },
-
+             
             "sources": [
                 {
                     "source": item["source"],
                     "chunk_id": item["chunk_id"],
+                    "semantic_score": item.get("semantic_score"),
+                    "keyword_score": item.get("keyword_score"),
                     "score": item["score"]
-                }
+                }    
                 for item in rag_results
             ]
+
 
         }),
 
