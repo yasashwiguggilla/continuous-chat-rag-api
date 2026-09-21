@@ -1,75 +1,126 @@
 import re
 
 
+def split_into_sections(text: str) -> list[str]:
+    """
+    Split document text using numbered section headings
+    such as:
+    1. Company Overview
+    2. Working Hours
+    3. Leave Policy
+    """
+
+    section_pattern = re.compile(
+        r"(?=\b\d+\.\s*[A-Z])"
+    )
+
+    sections = section_pattern.split(text)
+
+    return [
+        section.strip()
+        for section in sections
+        if section.strip()
+    ]
+
+
+def split_long_section(
+    section: str,
+    chunk_size: int,
+    chunk_overlap: int
+) -> list[str]:
+    """
+    Split a long section at sentence boundaries.
+    """
+
+    sentences = re.split(
+        r"(?<=[.!?])\s+",
+        section
+    )
+
+    chunks = []
+    current_chunk = ""
+
+    for sentence in sentences:
+
+        sentence = sentence.strip()
+
+        if not sentence:
+            continue
+
+        if (
+            current_chunk
+            and len(current_chunk)
+            + len(sentence)
+            + 1
+            <= chunk_size
+        ):
+            current_chunk += " " + sentence
+
+        else:
+
+            if current_chunk:
+                chunks.append(
+                    current_chunk.strip()
+                )
+
+            current_chunk = sentence
+
+    if current_chunk:
+        chunks.append(
+            current_chunk.strip()
+        )
+
+    return chunks
+
+
 def chunk_text(
     text: str,
     chunk_size: int = 800,
     chunk_overlap: int = 100
 ) -> list[str]:
-    """
-    Create paragraph-aware chunks.
-
-    The function tries to keep complete paragraphs together
-    while respecting the maximum chunk size.
-    """
 
     if not text or not text.strip():
         return []
 
-    # Normalize whitespace
-    text = re.sub(r"\r\n?", "\n", text)
-    text = re.sub(r"[ \t]+", " ", text)
+    # Normalize line endings
+    text = re.sub(
+        r"\r\n?",
+        "\n",
+        text
+    )
 
-    # Split on blank lines so paragraphs are preserved.
-    paragraphs = [
-        paragraph.strip()
-        for paragraph in re.split(r"\n\s*\n", text)
-        if paragraph.strip()
-    ]
+    # Normalize spaces
+    text = re.sub(
+        r"[ \t]+",
+        " ",
+        text
+    )
+
+    # Split document into numbered sections
+    sections = split_into_sections(
+        text
+    )
 
     chunks = []
-    current_chunk = ""
 
-    for paragraph in paragraphs:
+    for section in sections:
 
-        # If adding this paragraph still fits,
-        # keep it in the current chunk.
-        if (
-            current_chunk
-            and len(current_chunk) + len(paragraph) + 1
-            <= chunk_size
-        ):
-            current_chunk += "\n\n" + paragraph
-            continue
+        # Keep complete section if it fits
+        if len(section) <= chunk_size:
 
-        # Save the existing chunk.
-        if current_chunk:
-            chunks.append(current_chunk.strip())
+            chunks.append(
+                section.strip()
+            )
 
-        # If one paragraph itself is too large,
-        # split it safely.
-        if len(paragraph) > chunk_size:
-
-            start = 0
-
-            while start < len(paragraph):
-
-                end = start + chunk_size
-
-                piece = paragraph[start:end].strip()
-
-                if piece:
-                    chunks.append(piece)
-
-                start += chunk_size - chunk_overlap
-
-            current_chunk = ""
-
+        # Split only very large sections
         else:
-            current_chunk = paragraph
 
-    # Add the final chunk.
-    if current_chunk:
-        chunks.append(current_chunk.strip())
+            chunks.extend(
+                split_long_section(
+                    section,
+                    chunk_size,
+                    chunk_overlap
+                )
+            )
 
     return chunks

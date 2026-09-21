@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 VECTOR_DIR = BASE_DIR / "vector_data"
 MANIFEST_PATH = VECTOR_DIR / "index_manifest.json"
 
-INDEX_VERSION = "v3-page-citations"
+INDEX_VERSION = "v5-section-aware-chunking"
 
 
 # ============================================================
