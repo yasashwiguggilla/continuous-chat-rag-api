@@ -20,27 +20,4 @@ The retrieval metrics are calculated only on the 20 answerable questions.
 Run:
 
 ```powershell
-python scripts/evaluate_retrieval.py
-```
-
-The script evaluates both `semantic` and `hybrid` modes and writes detailed results to:
-
-```text
-evaluation_results.json
-```
-
-Paste the measured numbers below after running the evaluation:
-
-| Mode | Recall@1 | Recall@3 | Recall@4 | MRR | Mean latency (ms) |
-|---|---:|---:|---:|---:|---:|
-Semantic: 0.8500 / 1.0000 / 1.0000 / 0.9250 / 33.21 ms
-Hybrid:   0.9000 / 1.0000 / 1.0000 / 0.9500 / 23.58 ms
-
-
-
-## Recommendation
-
-Choose the default retrieval mode based on the measured Recall/MRR and latency.
-
-- If one mode has a consistent retrieval-quality advantage, use that mode as the default.
-- If the differences are within normal run-to-run variance, keep the simpler/default mode and document that the evaluation did not show a meaningful difference.
+python -m scripts.evaluate_retrieval
