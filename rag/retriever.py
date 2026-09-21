@@ -8,7 +8,7 @@ from azure.storage.blob import BlobServiceClient
 
 from rag.pdf_loader import (
     download_pdf,
-    extract_text_from_pdf
+    extract_pages_from_pdf
 )
 from rag.chunker import chunk_text
 from rag.embeddings import (
@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 VECTOR_DIR = BASE_DIR / "vector_data"
 MANIFEST_PATH = VECTOR_DIR / "index_manifest.json"
 
-INDEX_VERSION = "v2-paragraph-chunking"
+INDEX_VERSION = "v3-page-citations"
 
 
 # ============================================================
@@ -149,25 +149,34 @@ def build_index():
             blob.name
         )
 
-        text = extract_text_from_pdf(
+        # Extract text page by page
+        pages = extract_pages_from_pdf(
             pdf_bytes
         )
 
-        chunks = chunk_text(
-            text
-        )
+        # Global chunk ID for this PDF
+        chunk_id = 0
 
-        for chunk_id, chunk in enumerate(
-            chunks
-        ):
+        for page in pages:
 
-            all_chunks.append(chunk)
+            chunks = chunk_text(
+                page["text"]
+            )
 
-            metadata.append({
-                "source": blob.name,
-                "chunk_id": chunk_id,
-                "text": chunk
-            })
+            for chunk in chunks:
+
+                all_chunks.append(
+                    chunk
+                )
+
+                metadata.append({
+                    "source": blob.name,
+                    "page": page["page"],
+                    "chunk_id": chunk_id,
+                    "text": chunk
+                })
+
+                chunk_id += 1
 
     if not all_chunks:
         raise ValueError(

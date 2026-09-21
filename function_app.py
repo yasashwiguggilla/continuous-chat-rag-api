@@ -1192,6 +1192,18 @@ DOCUMENT CONTEXT:
         2
     )
 
+    sources = [
+        {
+            "source": item["source"],
+            "page": item.get("page"),
+            "chunk_id": item["chunk_id"],
+            "semantic_score": item.get("semantic_score"),
+            "keyword_score": item.get("keyword_score"),
+            "score": item["score"]
+        }
+        for item in rag_results
+    ]
+
     return func.HttpResponse(
 
         json.dumps({
@@ -1211,30 +1223,24 @@ DOCUMENT CONTEXT:
             "usage": usage_data,
 
             "rag": use_rag,
-            "retrieval_mode": retrieval_mode if use_rag else None,
+
+            "retrieval_mode": (
+                retrieval_mode
+                if use_rag
+                else None
+            ),
 
             "performance": {
                 "retrieval_time_ms": retrieval_time_ms,
                 "llm_time_ms": llm_time_ms,
                 "total_time_ms": total_time_ms
             },
-             
-            "sources": [
-                {
-                    "source": item["source"],
-                    "chunk_id": item["chunk_id"],
-                    "semantic_score": item.get("semantic_score"),
-                    "keyword_score": item.get("keyword_score"),
-                    "score": item["score"]
-                }    
-                for item in rag_results
-            ]
 
+            "sources": sources
 
         }),
 
         status_code=200,
 
         mimetype="application/json"
-
     )

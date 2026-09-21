@@ -11,15 +11,21 @@ PDF_CONTAINER_NAME = "pdf-documents"
 def download_pdf(blob_name: str) -> bytes:
     connection_string = os.environ["AzureWebJobsStorage"]
 
-    blob_service_client = BlobServiceClient.from_connection_string(
-        connection_string
+    blob_service_client = (
+        BlobServiceClient.from_connection_string(
+            connection_string
+        )
     )
 
-    container_client = blob_service_client.get_container_client(
-        PDF_CONTAINER_NAME
+    container_client = (
+        blob_service_client.get_container_client(
+            PDF_CONTAINER_NAME
+        )
     )
 
-    blob_client = container_client.get_blob_client(blob_name)
+    blob_client = container_client.get_blob_client(
+        blob_name
+    )
 
     return blob_client.download_blob().readall()
 
@@ -36,3 +42,22 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
             pages.append(text)
 
     return "\n\n".join(pages)
+
+
+def extract_pages_from_pdf(pdf_bytes: bytes) -> list[dict]:
+    reader = PdfReader(BytesIO(pdf_bytes))
+
+    pages = []
+
+    for page_number, page in enumerate(
+        reader.pages,
+        start=1
+    ):
+        text = page.extract_text()
+
+        pages.append({
+            "page": page_number,
+            "text": text or ""
+        })
+
+    return pages
