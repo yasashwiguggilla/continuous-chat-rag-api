@@ -4,3 +4,5 @@ openai
 tiktoken
 pypdf
 sentence-transformers
+numpy
+faiss-cpu

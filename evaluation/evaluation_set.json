@@ -1,0 +1,219 @@
+[
+  {
+    "id": 1,
+    "question": "What are the standard working hours?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      0
+    ]
+  },
+  {
+    "id": 2,
+    "question": "What are the core hours employees are expected to be available?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      0
+    ]
+  },
+  {
+    "id": 3,
+    "question": "How many paid leave days are provided each year to full-time employees?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      0
+    ]
+  },
+  {
+    "id": 4,
+    "question": "How far in advance should normal leave be requested?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      0,
+      1
+    ]
+  },
+  {
+    "id": 5,
+    "question": "How many unused paid leave days can be carried forward?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      1
+    ]
+  },
+  {
+    "id": 6,
+    "question": "What is the maximum number of work-from-home days allowed per month?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      1
+    ]
+  },
+  {
+    "id": 7,
+    "question": "What is the annual learning allowance amount?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      1
+    ]
+  },
+  {
+    "id": 8,
+    "question": "Which employee benefits are listed in the handbook?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      1
+    ]
+  },
+  {
+    "id": 9,
+    "question": "When is salary processed each month?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": 10,
+    "question": "What happens to payroll if the last working day is a holiday or weekend?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      2
+    ]
+  },
+  {
+    "id": 11,
+    "question": "Who should employees contact about payroll discrepancies?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      2
+    ]
+  },
+  {
+    "id": 12,
+    "question": "Where are employees expected to record attendance?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      2
+    ]
+  },
+  {
+    "id": 13,
+    "question": "What can happen after repeated unexplained absences?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      2
+    ]
+  },
+  {
+    "id": 14,
+    "question": "Which workplace behaviors are prohibited by the handbook?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      2
+    ]
+  },
+  {
+    "id": 15,
+    "question": "What security measures are required for company credentials and accounts?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      3
+    ]
+  },
+  {
+    "id": 16,
+    "question": "Which security incidents should employees report to the IT security team?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      3
+    ]
+  },
+  {
+    "id": 17,
+    "question": "Can employees share company credentials with coworkers?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      3
+    ]
+  },
+  {
+    "id": 18,
+    "question": "What is the standard notice period for full-time employees?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      3
+    ]
+  },
+  {
+    "id": 19,
+    "question": "How often are formal performance reviews conducted?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      3
+    ]
+  },
+  {
+    "id": 20,
+    "question": "Where should employees check the exact dates of company holidays?",
+    "answerable": true,
+    "expected_source": "company_employee_handbook.pdf",
+    "expected_chunks": [
+      4
+    ]
+  },
+  {
+    "id": 21,
+    "question": "What percentage annual performance bonus does each employee receive?",
+    "answerable": false,
+    "expected_source": null,
+    "expected_chunks": []
+  },
+  {
+    "id": 22,
+    "question": "Who is the CEO of Example Technologies?",
+    "answerable": false,
+    "expected_source": null,
+    "expected_chunks": []
+  },
+  {
+    "id": 23,
+    "question": "How many days of parental leave are available?",
+    "answerable": false,
+    "expected_source": null,
+    "expected_chunks": []
+  },
+  {
+    "id": 24,
+    "question": "What is the company's headquarters address?",
+    "answerable": false,
+    "expected_source": null,
+    "expected_chunks": []
+  },
+  {
+    "id": 25,
+    "question": "Which medical insurance provider does the company use?",
+    "answerable": false,
+    "expected_source": null,
+    "expected_chunks": []
+  }
+]

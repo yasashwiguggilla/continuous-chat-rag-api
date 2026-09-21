@@ -802,7 +802,6 @@ def chat(
         use_rag,
         bool
     ):
-
         return func.HttpResponse(
             json.dumps({
                 "error": (
@@ -813,9 +812,49 @@ def chat(
             mimetype="application/json"
         )
 
+    app_rag_mode = os.environ.get(
+        "RAG_RETRIEVAL_MODE",
+        "hybrid"
+    ).strip().lower()
+
+    retrieval_mode = body.get(
+        "retrieval_mode",
+        app_rag_mode
+    )
+
+    if not isinstance(
+        retrieval_mode,
+        str
+    ):
+        return func.HttpResponse(
+            json.dumps({
+                "error": (
+                    "retrieval_mode must be "
+                    "'semantic' or 'hybrid'"
+                )
+            }),
+            status_code=400,
+            mimetype="application/json"
+        )
+
+    retrieval_mode = retrieval_mode.strip().lower()
+
+    if retrieval_mode not in (
+        "semantic",
+        "hybrid"
+    ):
+        return func.HttpResponse(
+            json.dumps({
+                "error": (
+                    "retrieval_mode must be "
+                    "'semantic' or 'hybrid'"
+                )
+            }),
+            status_code=400,
+            mimetype="application/json"
+        )
+
     rag_results = []
-    retrieval_time_ms = 0.0
-    llm_time_ms = 0.0
 
     # ========================================================
     # 8. RAG RETRIEVAL
@@ -839,16 +878,6 @@ def chat(
                     "0.35"
                 )
             )
-            retrieval_start = time.perf_counter()
-            rag_mode = os.environ.get(
-           "RAG_RETRIEVAL_MODE",
-    "hybrid"
-)
-
-            rag_mode = os.environ.get(
-                "RAG_RETRIEVAL_MODE",
-                "hybrid"
-            )
 
             retrieval_start = time.perf_counter()
 
@@ -856,7 +885,7 @@ def chat(
                 message,
                 top_k=rag_top_k,
                 min_score=rag_min_score,
-                mode=rag_mode
+                mode=retrieval_mode
             )
 
             retrieval_time_ms = round(
@@ -865,6 +894,7 @@ def chat(
             )
 
         except FileNotFoundError:
+
             return func.HttpResponse(
                 json.dumps({
                     "error": (
@@ -875,6 +905,7 @@ def chat(
                 status_code=500,
                 mimetype="application/json"
             )
+
         except Exception as exc:
 
             return func.HttpResponse(
@@ -1180,6 +1211,7 @@ DOCUMENT CONTEXT:
             "usage": usage_data,
 
             "rag": use_rag,
+            "retrieval_mode": retrieval_mode if use_rag else None,
 
             "performance": {
                 "retrieval_time_ms": retrieval_time_ms,
